@@ -1,3 +1,4 @@
+// sudo docker-compose up --build
 // server.js
 const express = require('express');
 const puppeteer = require('puppeteer-extra');
@@ -32,75 +33,6 @@ async function checkTorProxy() {
   }
 }
 
-// API scraping
-// app.post('/scraping', async (req, res) => {
-//   const { url, js = false, script = '' } = req.body;
-
-//   if (!url) {
-//     return res.status(400).json({ error: 'URL không được để trống' });
-//   }
-
-//   console.log(`➡️ [SCRAPING] Bắt đầu scraping URL: ${url}`);
-//   console.log(`📦 Tham số truyền vào: js=${js}, có script=${!!script}`);
-
-//   let browser;
-//   try {
-//     console.log('🚀 Khởi động browser với proxy Tor...');
-//     browser = await puppeteer.launch({
-//       headless: false,
-//       args: [
-//         `--proxy-server=${TOR_PROXY}`,
-//         '--no-sandbox',
-//         '--disable-setuid-sandbox',
-//         '--disable-dev-shm-usage',
-//         '--disable-accelerated-2d-canvas',
-//         '--disable-gpu'
-//       ]
-//     });
-
-//     const page = await browser.newPage();
-
-//     // Thiết lập User-Agent
-//     const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36';
-//     await page.setUserAgent(userAgent);
-//     console.log(`🧑‍💻 Đặt User-Agent: ${userAgent}`);
-
-//     // Timeout
-//     await page.setDefaultNavigationTimeout(200000);
-//     console.log('⏱️ Đặt timeout là 200 giây.');
-
-//     // Truy cập URL
-//     console.log(`🌐 Đang truy cập URL: ${url} ...`);
-//     await page.goto(url, { waitUntil: 'networkidle2' });
-//     console.log('✅ Truy cập URL thành công!');
-
-//     let result;
-//     if (js && script) {
-//       console.log('💡 Thực thi script tuỳ chỉnh...');
-//       result = await page.evaluate((scriptContent) => {
-//         try {
-//           // eslint-disable-next-line no-eval
-//           return eval(scriptContent);
-//         } catch (error) {
-//           return { error: error.message };
-//         }
-//       }, script);
-//     } else {
-//       console.log('📄 Lấy nội dung HTML của trang...');
-//       result = await page.content();
-//     }
-
-//     console.log('✅ Scraping thành công, trả về kết quả.');
-//     await browser.close();
-//     return res.json({ success: true, data: result });
-
-//   } catch (error) {
-//     console.error('❌ Lỗi scraping:', error.message);
-//     if (browser) await browser.close();
-//     return res.status(500).json({ error: error.message });
-//   }
-// });
-
 app.post('/scraping', async (req, res) => {
   const { url, mode = 'html', actions = [] } = req.body;
 
@@ -109,14 +41,13 @@ app.post('/scraping', async (req, res) => {
   }
 
   console.log(`➡️ [SCRAPING] Bắt đầu scraping URL111: ${url}`);
-  console.log(`📦 Tham số truyền vào111: mode=${mode}, actions=${actions.length}`);
+  console.log(`📦 Tham số truyền vào: mode=${mode}, actions=${actions.length}`);
 
   let browser;
   try {
-    console.log(puppeteer);
-    console.log('🔄 Puppeteer chuẩn bị launch...111');
+    console.log('🔄 Puppeteer chuẩn bị launch...');
     browser = await puppeteer.launch({
-      headless: true,
+      headless: 'new',
       args: [
         `--proxy-server=${TOR_PROXY}`,
         '--no-sandbox',
@@ -198,6 +129,16 @@ app.post('/scraping', async (req, res) => {
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
+});
+
+// check tor proxy 
+app.get('/check-tor-proxy', async (req, res) => {
+  const proxyAvailable = await checkTorProxy();
+  if (proxyAvailable) {
+    res.status(200).json({ status: 'OK', message: 'Proxy Tor hoạt động bình thường.' });
+  } else {
+    res.status(500).json({ status: 'ERROR', message: 'Không thể kết nối tới proxy Tor.' });
+  }
 });
 
 // Khởi động server
