@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  tor-proxy:
+    image: zhaowde/rotating-tor-http-proxy
+    environment:
+      - TOR_INSTANCES=1
+      - TOR_REBUILD_INTERVAL=700
+      - TOR_EXIT_COUNTRY=de,us,nl
+      # Tuỳ chỉnh quốc gia nếu cần
+      # - TOR_EXIT_COUNTRY=de,ch,at
+    ports:
+      - "3128:3128"
+      - "4444:4444"
+    restart: unless-stopped
+    networks:
+      - scraping-network
+
+  scraping-service:
+    build: .
+    environment:
+      - PORT=3000
+      - TOR_PROXY=http://tor-proxy:3128
+    ports:
+      - "3000:3000"
+    depends_on:
+      - tor-proxy
+    restart: unless-stopped
+    networks:
+      - scraping-network
+
+networks:
+  scraping-network:
+    driver: bridge
