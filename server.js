@@ -113,6 +113,8 @@ app.post('/scraping', async (req, res) => {
 
   let browser;
   try {
+    console.log(puppeteer);
+    console.log('🔄 Puppeteer chuẩn bị launch...');
     browser = await puppeteer.launch({
       headless: true,
       args: [
@@ -124,14 +126,17 @@ app.post('/scraping', async (req, res) => {
         '--disable-gpu'
       ]
     });
-
+    console.log('✅ Puppeteer đã launch xong!');
+    console.log('🚀 Khởi động browser với proxy Tor...');
     const page = await browser.newPage();
+    console.log('🌐 Đang truy cập URL:', url);
 
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36');
+    console.log('🧑‍💻 Đặt User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36');
     await page.setDefaultNavigationTimeout(200000);
-
+    console.log('⏱️ Đặt timeout là 200 giây.');
     await page.goto(url, { waitUntil: 'networkidle2' });
-
+    console.log('✅ Truy cập URL thành công!');
     let result = null;
 
     if (mode === 'js' && actions.length > 0) {
