@@ -6,7 +6,14 @@ WORKDIR /app
 
 # Copy file cấu hình và code
 COPY package*.json ./
+
+# Đảm bảo quyền truy cập đúng cho file package-lock.json
+RUN chmod 644 package-lock.json || true
+
+# Cài đặt các dependencies
 RUN npm install
+
+# Copy toàn bộ mã nguồn vào container
 COPY . .
 
 # Biến môi trường cần thiết

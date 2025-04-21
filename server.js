@@ -108,13 +108,13 @@ app.post('/scraping', async (req, res) => {
     return res.status(400).json({ error: 'URL không được để trống' });
   }
 
-  console.log(`➡️ [SCRAPING] Bắt đầu scraping URL: ${url}`);
-  console.log(`📦 Tham số truyền vào: mode=${mode}, actions=${actions.length}`);
+  console.log(`➡️ [SCRAPING] Bắt đầu scraping URL111: ${url}`);
+  console.log(`📦 Tham số truyền vào111: mode=${mode}, actions=${actions.length}`);
 
   let browser;
   try {
     console.log(puppeteer);
-    console.log('🔄 Puppeteer chuẩn bị launch...');
+    console.log('🔄 Puppeteer chuẩn bị launch...111');
     browser = await puppeteer.launch({
       headless: true,
       args: [
