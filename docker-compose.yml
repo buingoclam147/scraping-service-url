@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   tor-proxy:
     image: zhaowde/rotating-tor-http-proxy
@@ -7,8 +5,6 @@ services:
       - TOR_INSTANCES=1
       - TOR_REBUILD_INTERVAL=700
       - TOR_EXIT_COUNTRY=de,us,nl
-      # Tuỳ chỉnh quốc gia nếu cần
-      # - TOR_EXIT_COUNTRY=de,ch,at
     ports:
       - "3128:3128"
       - "4444:4444"
