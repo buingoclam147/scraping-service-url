@@ -17,6 +17,9 @@ RUN apt-get update && apt-get install -y chromium \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
+# Cấp quyền cho Chromium
+RUN chmod -R o+rx /usr/bin/chromium
+
 # Tạo thư mục làm việc
 WORKDIR /app
 
