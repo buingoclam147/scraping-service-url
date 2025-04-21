@@ -47,7 +47,7 @@ app.post('/scraping', async (req, res) => {
   try {
     console.log('🔄 Puppeteer chuẩn bị launch...');
     browser = await puppeteer.launch({
-      headless: 'new',
+      headless: false,
       executablePath: '/usr/bin/chromium', // đoạn này viết vầy để nó tìm được đến chrome của máy ubuntu
       args: [
         // `--proxy-server=${TOR_PROXY}`,
