@@ -50,7 +50,7 @@ app.post('/scraping', async (req, res) => {
       headless: 'new',
       executablePath: '/usr/bin/chromium', // đoạn này viết vầy để nó tìm được đến chrome của máy ubuntu
       args: [
-        `--proxy-server=${TOR_PROXY}`,
+        // `--proxy-server=${TOR_PROXY}`,
         '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
