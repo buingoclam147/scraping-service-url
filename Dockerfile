@@ -52,8 +52,6 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
 # Port mà ứng dụng sử dụng
 EXPOSE 3000
 
-# Sử dụng dumb-init để xử lý signals đúng cách
-ENTRYPOINT ["dumb-init", "--"]
 
 # Khởi động ứng dụng
 CMD ["node", "server.js"]
