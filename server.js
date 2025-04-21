@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const { HttpsProxyAgent } = require('https-proxy-agent');
 const axios = require('axios');
-
+const chromium = require('@sparticuz/chromium');
 // Cấu hình
 const PORT = process.env.PORT || 3000;
 const TOR_PROXY = process.env.TOR_PROXY || 'http://localhost:3128';
@@ -78,7 +78,7 @@ app.post('/scraping', async (req, res) => {
 
     console.log('👉 Bắt đầu khởi động browser...');
     try {
-      browser = await puppeteer.launch(launchOptions);
+      browser = await chromium.puppeteer.launch(launchOptions);
       console.log('✅ Puppeteer đã launch xong!');
     } catch (browserError) {
       console.error('❌ Lỗi khi khởi động browser:', browserError);
@@ -86,9 +86,9 @@ app.post('/scraping', async (req, res) => {
       // Thử lại với cấu hình đơn giản hơn
       console.log('🔄 Thử lại với cấu hình đơn giản hơn...');
       try {
-        browser = await puppeteer.launch({
+        browser = await chromium.puppeteer.launch({
           headless: 'new',
-          args: ['--no-sandbox', '--disable-setuid-sandbox']
+          args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox']
         });
         console.log('✅ Khởi động thành công với cấu hình đơn giản!');
       } catch (retryError) {
