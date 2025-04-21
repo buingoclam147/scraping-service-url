@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const { HttpsProxyAgent } = require('https-proxy-agent');
 const axios = require('axios');
-const chromium = require('@sparticuz/chromium');
+
 // Cấu hình
 const PORT = process.env.PORT || 3000;
 const TOR_PROXY = process.env.TOR_PROXY || 'http://localhost:3128';
@@ -33,7 +33,6 @@ async function checkTorProxy() {
   }
 }
 
-// Thay đổi phần khởi tạo Puppeteer trong route /scraping
 app.post('/scraping', async (req, res) => {
   const { url, mode = 'html', actions = [] } = req.body;
 
@@ -41,75 +40,31 @@ app.post('/scraping', async (req, res) => {
     return res.status(400).json({ error: 'URL không được để trống' });
   }
 
-  console.log(`➡️ [SCRAPING] Bắt đầu scraping URL: ${url}`);
+  console.log(`➡️ [SCRAPING] Bắt đầu scraping URL111: ${url}`);
   console.log(`📦 Tham số truyền vào: mode=${mode}, actions=${actions.length}`);
 
   let browser;
   try {
-    // Kiểm tra đường dẫn Chromium
-    const execPath = process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium';
-    console.log(`🔎 Đường dẫn Chromium được cấu hình: ${execPath}`);
-
-    // Kiểm tra file tồn tại
-    const fs = require('fs');
-    if (fs.existsSync(execPath)) {
-      console.log(`✅ File Chromium tồn tại tại đường dẫn ${execPath}`);
-    } else {
-      console.error(`❌ KHÔNG TÌM THẤY Chromium tại ${execPath}`);
-    }
-
-    console.log('🔄 Puppeteer chuẩn bị launch với các tùy chọn sau:');
-    const launchOptions = {
+    console.log('🔄 Puppeteer chuẩn bị launch...');
+    browser = await puppeteer.launch({
       headless: 'new',
-      executablePath: execPath,
+      executablePath: '/usr/bin/chromium', // đoạn này viết vầy để nó tìm được đến chrome của máy ubuntu
       args: [
-        // `--proxy-server=${TOR_PROXY}`,
+        `--proxy-server=${TOR_PROXY}`,
         '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
         '--disable-accelerated-2d-canvas',
-        '--disable-gpu',
-        '--single-process',
-        '--no-zygote'
-      ],
-      timeout: 30000 // 30 giây timeout
-    };
-    console.log(JSON.stringify(launchOptions, null, 2));
-
-    console.log('👉 Bắt đầu khởi động browser...');
-    try {
-      browser = await chromium.puppeteer.launch(launchOptions);
-      console.log('✅ Puppeteer đã launch xong!');
-    } catch (browserError) {
-      console.error('❌ Lỗi khi khởi động browser:', browserError);
-
-      // Thử lại với cấu hình đơn giản hơn
-      console.log('🔄 Thử lại với cấu hình đơn giản hơn...');
-      try {
-        browser = await chromium.puppeteer.launch({
-          headless: 'new',
-          args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox']
-        });
-        console.log('✅ Khởi động thành công với cấu hình đơn giản!');
-      } catch (retryError) {
-        console.error('❌ Vẫn không thể khởi động browser:', retryError);
-        throw retryError;
-      }
-    }
-
-    console.log('🚀 Khởi động browser thành công!');
+        '--disable-gpu'
+      ]
+    });
+    console.log('✅ Puppeteer đã launch xong!');
+    console.log('🚀 Khởi động browser với proxy Tor...');
     const page = await browser.newPage();
-    console.log('✅ Tạo trang mới thành công!');
-
-    // Thông tin về version
-    const version = await browser.version();
-    console.log(`📊 Phiên bản browser: ${version}`);
-
     console.log('🌐 Đang truy cập URL:', url);
 
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36');
-    console.log('🧑‍💻 Đặt User-Agent thành công');
-
+    console.log('🧑‍💻 Đặt User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36');
     await page.setDefaultNavigationTimeout(200000);
     console.log('⏱️ Đặt timeout là 200 giây.');
     await page.goto(url, { waitUntil: 'networkidle2' });
