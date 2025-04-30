@@ -2,9 +2,9 @@ services:
   tor-proxy:
     image: zhaowde/rotating-tor-http-proxy
     environment:
-      - TOR_INSTANCES=1
-      - TOR_REBUILD_INTERVAL=700
-      - TOR_EXIT_COUNTRY=de,us,nl
+      - "TOR_INSTANCES=10"
+      - "TOR_REBUILD_INTERVAL=5000"
+      - "TOR_EXIT_COUNTRY=vn,jp,au"
     ports:
       - "3128:3128"
       - "4444:4444"
@@ -13,7 +13,7 @@ services:
       - scraping-network
 
   scraping-service:
-    build: .
+    image: buingoclam147/scraping-service:latest
     environment:
       - PORT=3000
       - TOR_PROXY=http://tor-proxy:3128
@@ -26,6 +26,7 @@ services:
       - scraping-network
     volumes:
       - .:/app
+      - /app/node_modules
 
 networks:
   scraping-network:

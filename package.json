@@ -1,10 +1,11 @@
 {
-  "name": "scraping-service",
+  "name": "puppeteer-html-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "keywords": [
     "scraping",
@@ -14,14 +15,17 @@
   ],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@sparticuz/chromium": "^133.0.0",
     "axios": "^1.8.4",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "http-proxy-agent": "^7.0.2",
     "https-proxy-agent": "^7.0.6",
+    "p-queue": "^8.1.0",
     "puppeteer": "^24.6.1",
+    "puppeteer-core": "^24.6.1",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2"
   }
