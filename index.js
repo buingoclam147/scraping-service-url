@@ -7,12 +7,12 @@
 // docker-compose up
 import chromium from "@sparticuz/chromium";
 import axios from 'axios';
+import dotenv from 'dotenv';
 import express from "express";
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import PQueue from 'p-queue';
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
-import dotenv from 'dotenv';
 dotenv.config();
 
 puppeteer.use(StealthPlugin());

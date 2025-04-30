@@ -24,10 +24,20 @@ services:
     restart: unless-stopped
     networks:
       - scraping-network
-    volumes:
-      - .:/app
-      - /app/node_modules
 
+  scraping-twitter:
+    image: buingoclam147/scraping-twitter-dotai:latest
+    environment:
+      - PORT=3001
+      - CRAWLER_SERVICE=http://scraping-service:3000/scrape
+    ports:
+      - "3001:3001"
+    depends_on:
+      - scraping-service
+    restart: unless-stopped
+    networks:
+      - scraping-network
+    
 networks:
   scraping-network:
     driver: bridge
