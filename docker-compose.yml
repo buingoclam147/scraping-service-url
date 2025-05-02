@@ -1,16 +1,16 @@
 services:
-  tor-proxy:
-    image: zhaowde/rotating-tor-http-proxy
-    environment:
-      - "TOR_INSTANCES=10"
-      - "TOR_REBUILD_INTERVAL=5000"
-      - "TOR_EXIT_COUNTRY=vn,jp,au"
-    ports:
-      - "3128:3128"
-      - "4444:4444"
-    restart: unless-stopped
-    networks:
-      - scraping-network
+  # tor-proxy:
+  #   image: zhaowde/rotating-tor-http-proxy
+  #   environment:
+  #     - "TOR_INSTANCES=10"
+  #     - "TOR_REBUILD_INTERVAL=5000"
+  #     - "TOR_EXIT_COUNTRY=vn,jp,au"
+  #   ports:
+  #     - "3128:3128"
+  #     - "4444:4444"
+  #   restart: unless-stopped
+  #   networks:
+  #     - scraping-network
 
   scraping-service:
     image: buingoclam147/scraping-service:latest
