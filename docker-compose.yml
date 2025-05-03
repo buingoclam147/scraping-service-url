@@ -1,26 +1,10 @@
 services:
-  # tor-proxy:
-  #   image: zhaowde/rotating-tor-http-proxy
-  #   environment:
-  #     - "TOR_INSTANCES=10"
-  #     - "TOR_REBUILD_INTERVAL=5000"
-  #     - "TOR_EXIT_COUNTRY=vn,jp,au"
-  #   ports:
-  #     - "3128:3128"
-  #     - "4444:4444"
-  #   restart: unless-stopped
-  #   networks:
-  #     - scraping-network
-
   scraping-service:
     image: buingoclam147/scraping-service:latest
     environment:
       - PORT=3000
-      - TOR_PROXY=http://tor-proxy:3128
     ports:
       - "3000:3000"
-    depends_on:
-      - tor-proxy
     restart: unless-stopped
     networks:
       - scraping-network
@@ -37,7 +21,7 @@ services:
     restart: unless-stopped
     networks:
       - scraping-network
-    
+
 networks:
   scraping-network:
     driver: bridge
