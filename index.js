@@ -24,6 +24,8 @@ const scrapeQueue = new PQueue({ concurrency: 3 }); // Chỉ cho phép 3 job ch�
 let browser; // Khởi tạo biến browser toàn cục
 
 async function initBrowser() {
+  console.log("Chromium path:", await chromium.executablePath());
+
   browser = await puppeteer.launch({
     args: [...chromium.args,
     ...[
