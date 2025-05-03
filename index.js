@@ -28,6 +28,7 @@ async function initBrowser() {
     args: [...chromium.args,
     ...[
       // `--proxy-server=${TOR_PROXY}`,
+      '--disable-http2',
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage',
