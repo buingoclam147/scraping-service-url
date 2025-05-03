@@ -43,6 +43,7 @@ async function initBrowser() {
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath(),
     headless: 'new',
+    ignoreDefaultArgs: ['--enable-automation'],
   });
 
   console.log('🚀 Puppeteer browser đã được khởi tạo!');
