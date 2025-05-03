@@ -41,7 +41,8 @@ async function initBrowser() {
     ]
     ],
     defaultViewport: chromium.defaultViewport,
-    headless: true,
+    executablePath: await chromium.executablePath(),
+    headless: 'new',
   });
 
   console.log('🚀 Puppeteer browser đã được khởi tạo!');
@@ -98,7 +99,13 @@ async function handleScrape(req, res) {
     if (!browser) throw new Error('Browser chưa được khởi tạo.');
 
     page = await browser.newPage(); // Dùng browser đã khởi tạo
-    await page.setUserAgent('Mozilla/5.0 ... Safari/537.36');
+    await page.setUserAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.105 Safari/537.36'
+    );
+    await page.setExtraHTTPHeaders({
+      'accept-language': 'en-US,en;q=0.9',
+    });
+
     await page.setDefaultNavigationTimeout(300000);
     await page.goto(url, { waitUntil: 'domcontentloaded' }); // Chờ đến khi DOM đã tải xong
     await page.waitForFunction(() => {
