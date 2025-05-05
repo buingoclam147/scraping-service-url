@@ -6,8 +6,10 @@
 // docker-compose build --no-cache
 // docker-compose up
 import chromium from "@sparticuz/chromium";
+import axios from 'axios';
 import dotenv from 'dotenv';
 import express from "express";
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import PQueue from 'p-queue';
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
@@ -24,13 +26,10 @@ const scrapeQueue = new PQueue({ concurrency: 3 }); // Chỉ cho phép 3 job ch�
 let browser; // Khởi tạo biến browser toàn cục
 
 async function initBrowser() {
-  console.log("Chromium path:", await chromium.executablePath());
-
   browser = await puppeteer.launch({
     args: [...chromium.args,
     ...[
-      // `--proxy-server=${TOR_PROXY}`,
-      '--disable-http2',
+      `--proxy-server=${TOR_PROXY}`,
       '--no-sandbox',
       '--disable-setuid-sandbox',
       '--disable-dev-shm-usage',
@@ -43,29 +42,27 @@ async function initBrowser() {
     ]
     ],
     defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath(),
-    headless: 'new',
-    ignoreDefaultArgs: ['--enable-automation'],
+    headless: true,
   });
 
   console.log('🚀 Puppeteer browser đã được khởi tạo!');
 }
 
-// async function checkTorProxy() {
-//   try {
-//     const agent = new HttpsProxyAgent(TOR_PROXY);
-//     console.log('Kiểm tra kết nối proxy Tor...');
-//     const response = await axios.get('https://api.ipify.org?format=json', {
-//       httpsAgent: agent
-//     });
+async function checkTorProxy() {
+  try {
+    const agent = new HttpsProxyAgent(TOR_PROXY);
+    console.log('Kiểm tra kết nối proxy Tor...');
+    const response = await axios.get('https://api.ipify.org?format=json', {
+      httpsAgent: agent
+    });
 
-//     console.log(`Kết nối proxy thành công! IP hiện tại: ${response.data.ip}`);
-//     return true;
-//   } catch (error) {
-//     console.error('Không thể kết nối tới proxy Tor:', error.message);
-//     return false;
-//   }
-// }
+    console.log(`Kết nối proxy thành công! IP hiện tại: ${response.data.ip}`);
+    return true;
+  } catch (error) {
+    console.error('Không thể kết nối tới proxy Tor:', error.message);
+    return false;
+  }
+}
 
 
 app.post("/scrape", async (req, res) => {
@@ -102,13 +99,7 @@ async function handleScrape(req, res) {
     if (!browser) throw new Error('Browser chưa được khởi tạo.');
 
     page = await browser.newPage(); // Dùng browser đã khởi tạo
-    await page.setUserAgent(
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.6045.105 Safari/537.36'
-    );
-    await page.setExtraHTTPHeaders({
-      'accept-language': 'en-US,en;q=0.9',
-    });
-
+    await page.setUserAgent('Mozilla/5.0 ... Safari/537.36');
     await page.setDefaultNavigationTimeout(300000);
     await page.goto(url, { waitUntil: 'domcontentloaded' }); // Chờ đến khi DOM đã tải xong
     await page.waitForFunction(() => {
@@ -154,28 +145,28 @@ app.get('/health', (req, res) => {
 });
 
 // check tor proxy 
-// app.get('/check-tor-proxy', async (req, res) => {
-//   const proxyAvailable = await checkTorProxy();
-//   if (proxyAvailable) {
-//     res.status(200).json({ status: 'OK', message: 'Proxy Tor hoạt động bình thường.' });
-//   } else {
-//     res.status(500).json({ status: 'ERROR', message: 'Không thể kết nối tới proxy Tor.' });
-//   }
-// });
+app.get('/check-tor-proxy', async (req, res) => {
+  const proxyAvailable = await checkTorProxy();
+  if (proxyAvailable) {
+    res.status(200).json({ status: 'OK', message: 'Proxy Tor hoạt động bình thường.' });
+  } else {
+    res.status(500).json({ status: 'ERROR', message: 'Không thể kết nối tới proxy Tor.' });
+  }
+});
 
 // Khởi động server
 async function startServer() {
   // Kiểm tra kết nối proxy trước khi khởi động server
-  // const proxyAvailable = await checkTorProxy();
+  const proxyAvailable = await checkTorProxy();
 
-  // if (!proxyAvailable) {
-  //   console.warn('Cảnh báo: Không thể kết nối tới proxy Tor. Server vẫn sẽ khởi động nhưng scraping có thể không hoạt động đúng.');
-  // }
+  if (!proxyAvailable) {
+    console.warn('Cảnh báo: Không thể kết nối tới proxy Tor. Server vẫn sẽ khởi động nhưng scraping có thể không hoạt động đúng.');
+  }
   await initBrowser(); // ⚠️ Gọi trước khi start server
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server đang chạy tại http://localhost:${PORT}`);
     console.log(`API scraping có sẵn tại http://localhost:${PORT}/scrape`);
-    // console.log(`Sử dụng proxy Tor tại: ${TOR_PROXY}`);
+    console.log(`Sử dụng proxy Tor tại: ${TOR_PROXY}`);
   });
 }
 
