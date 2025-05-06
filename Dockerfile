@@ -1,11 +1,12 @@
 FROM node:20-slim
 
-# Cài đặt các thư viện phụ thuộc cho Chromium
+# Cài các thư viện cần thiết để Chromium chạy được
 RUN apt-get update && apt-get install -y \
   wget \
   ca-certificates \
   fonts-liberation \
   libappindicator3-1 \
+  libnss3 \
   libasound2 \
   libatk-bridge2.0-0 \
   libatk1.0-0 \
@@ -24,28 +25,28 @@ RUN apt-get update && apt-get install -y \
   libxdamage1 \
   libxrandr2 \
   libxkbcommon0 \
+  libxss1 \
+  libu2f-udev \
+  libvulkan1 \
   xdg-utils \
   --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
-  
 
-# Thiết lập làm việc trong thư mục /app
+# Thiết lập thư mục làm việc
 WORKDIR /app
 
-# Copy package.json và cài đặt các dependencies
+# Copy package.json + cài deps
 COPY package*.json ./
 RUN npm install
 
-# Copy toàn bộ mã nguồn của ứng dụng vào Docker container
+# Copy mã nguồn
 COPY . .
 
-# Biến môi trường cho Puppeteer sử dụng Chromium đã cài đặt
+# Biến môi trường
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     NODE_ENV=production \
     TOR_PROXY=http://tor-proxy:3128
 
-# Port mà ứng dụng sử dụng
 EXPOSE 3000
 
-# Chạy ứng dụng
 CMD ["node", "index.js"]
